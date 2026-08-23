@@ -12,20 +12,54 @@ BST::BST()
 //Destructor, for deleting all nodes
 BST::~BST(){}
 
+BST::Node* Node(int key){
+    this->key = key;
+    left = NULL;
+    right = NULL;
+}
+
 void BST::insert(int key)
 {
     root = insert(root, key);
 }
+
 BST::Node* BST::insert(Node* root, int key)
 {
     if (root == NULL)
     {
-        root = new Node(key);
+        return new Node(key);
     }
-    else
+
+    if (key < root->key)
     {
-        insert(root->left, key);
+        root->left = insert(root->left, key);
     }
+    else if(key > root->key)
+    {
+        root->right = insert(root->right, key);
+    }
+
+    return root;
+}
+
+bool BST::search(Node* root, int key)
+{
+    if (root == NULL)
+    {
+        return false;
+    }
+
+    if (key < root->key)
+    {
+        return search(root->left, key);
+    }
+
+    if (key > root->key)
+    {
+        return search(root->right, key);
+    }
+
+    return true;
 }
 
 int main()
