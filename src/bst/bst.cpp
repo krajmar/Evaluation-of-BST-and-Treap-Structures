@@ -62,6 +62,56 @@ bool BST::search(Node* root, int key)
     return true;
 }
 
+BST::Node* BST::findMin(Node* root)
+{
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    if (root->left != NULL)
+    {
+        return findMin(root->left);
+    }
+    return root;
+}
+
+BST::Node* BST::deleteNode(Node* root, int key)
+{
+    if (root == NULL){
+        return root;
+    }
+    if (key < root->key){
+        root->left = deleteNode(root->left, key);
+    }
+    else if (key > root->key){
+        root->right = deleteNode(root->right, key);
+    }
+    else{
+        // Node has no left child
+        if (root->left == NULL)
+        {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        }
+
+        // Node has no right child
+        if (root->right == NULL)
+        {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        // Node has two children
+        Node* temp = findMin(root->right);
+        root->key = temp->key;
+        root->right = deleteNode(root->right, temp->key);
+    }
+
+    return root;
+}
+
 int main()
 {
     return 0;
