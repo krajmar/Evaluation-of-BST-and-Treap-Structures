@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CLionExternalBuildManager">
+    <target id="9755fa12-2e7a-45f4-b0f7-c3f860fefda2" name="Build Thesis BST/Treap" defaultType="TOOL">
+      <configuration id="07254f0f-c550-4e4d-84e5-c289b8e16c18" name="Build Thesis BST/Treap">
+        <build type="TOOL">
+          <tool actionId="Tool_External Tools_g++ Build" />
+        </build>
+      </configuration>
+    </target>
+  </component>
+</project>

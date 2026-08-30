@@ -12,7 +12,7 @@ BST::BST()
 //Destructor, for deleting all nodes
 BST::~BST(){}
 
-BST::Node* Node(int key){
+BST::Node::Node(int key){
     this->key = key;
     left = NULL;
     right = NULL;
@@ -53,6 +53,7 @@ BST::Node* BST::insert(Node* root, int key){
 }
 
 bool BST::search(Node* root, int key){
+
     if (root == NULL){
         return false;
     }
@@ -66,6 +67,11 @@ bool BST::search(Node* root, int key){
     }
 
     return true;
+}
+
+bool BST::search(int key)
+{
+    return search(root, key);
 }
 
 BST::Node* BST::findMin(Node* root)
@@ -112,9 +118,4 @@ BST::Node* BST::deleteNode(Node* root, int key)
     }
 
     return root;
-}
-
-int main()
-{
-    return 0;
 }
