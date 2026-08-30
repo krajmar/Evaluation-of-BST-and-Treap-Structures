@@ -18,6 +18,7 @@ private:
     bool search(Node* root, int key);
     Node* deleteNode(Node* root, int key);
     Node* findMin(Node* root);
+    void inorder(Node* root);
 
 public:
     BST();
@@ -27,4 +28,5 @@ public:
     bool search(int key);
     void deleteNode(int key);
     int height(Node* root);
+    void inorder();
 };

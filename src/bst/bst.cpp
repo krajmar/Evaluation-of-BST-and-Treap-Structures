@@ -18,44 +18,50 @@ BST::Node* Node(int key){
     right = NULL;
 }
 
-void BST::insert(int key)
+void BST::inorder(Node* root)
 {
+    if (root == NULL){
+        return;
+    }
+
+    inorder(root->left);
+    std::cout << root->key << " ";
+    inorder(root->right);
+}
+
+void BST::inorder(){
+    inorder(root);
+}
+
+void BST::insert(int key){
     root = insert(root, key);
 }
 
-BST::Node* BST::insert(Node* root, int key)
-{
-    if (root == NULL)
-    {
+BST::Node* BST::insert(Node* root, int key){
+    if (root == NULL){
         return new Node(key);
     }
 
-    if (key < root->key)
-    {
+    if (key < root->key){
         root->left = insert(root->left, key);
     }
-    else if(key > root->key)
-    {
+    else if(key > root->key){
         root->right = insert(root->right, key);
     }
 
     return root;
 }
 
-bool BST::search(Node* root, int key)
-{
-    if (root == NULL)
-    {
+bool BST::search(Node* root, int key){
+    if (root == NULL){
         return false;
     }
 
-    if (key < root->key)
-    {
+    if (key < root->key){
         return search(root->left, key);
     }
 
-    if (key > root->key)
-    {
+    if (key > root->key){
         return search(root->right, key);
     }
 
@@ -64,12 +70,10 @@ bool BST::search(Node* root, int key)
 
 BST::Node* BST::findMin(Node* root)
 {
-    if (root == NULL)
-    {
+    if (root == NULL){
         return NULL;
     }
-    if (root->left != NULL)
-    {
+    if (root->left != NULL){
         return findMin(root->left);
     }
     return root;
@@ -88,16 +92,14 @@ BST::Node* BST::deleteNode(Node* root, int key)
     }
     else{
         // Node has no left child
-        if (root->left == NULL)
-        {
+        if (root->left == NULL){
             Node* temp = root->right;
             delete root;
             return temp;
         }
 
         // Node has no right child
-        if (root->right == NULL)
-        {
+        if (root->right == NULL){
             Node* temp = root->left;
             delete root;
             return temp;
