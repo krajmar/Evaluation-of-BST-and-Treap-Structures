@@ -119,3 +119,8 @@ BST::Node* BST::deleteNode(Node* root, int key)
 
     return root;
 }
+
+void BST::deleteNode(int key)
+{
+    root = deleteNode(root, key);
+}
