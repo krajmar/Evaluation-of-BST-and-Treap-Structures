@@ -1,6 +1,7 @@
 #include "bst.h"
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
 
 using namespace std;
 
@@ -72,6 +73,22 @@ bool BST::search(Node* root, int key){
 bool BST::search(int key)
 {
     return search(root, key);
+}
+
+int BST::height(Node* root)
+{
+    if (root == NULL)
+    {
+        return -1;
+    }
+    int leftHeight= height(root->left);
+    int rightHeight= height(root->right);
+
+    return 1 + std::max(height(root->left), height(root->right));
+}
+int BST::height()
+{
+    return height(root);
 }
 
 BST::Node* BST::findMin(Node* root)
