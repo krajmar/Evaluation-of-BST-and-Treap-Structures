@@ -81,10 +81,8 @@ int BST::height(Node* root)
     {
         return -1;
     }
-    int leftHeight= height(root->left);
-    int rightHeight= height(root->right);
 
-    return 1 + std::max(height(root->left), height(root->right));
+    return 1 + max(height(root->left), height(root->right));
 }
 int BST::height()
 {

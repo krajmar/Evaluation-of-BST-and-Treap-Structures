@@ -11,7 +11,7 @@ Treap::Treap()
 }
 
 //Destructor, for deleting all nodes
-void Treap::~Treap(){}
+Treap::~Treap(){}
 
 Treap::Node::Node(int key, int priority){
     this->key = key;
@@ -146,4 +146,18 @@ Treap::Node* Treap::deleteNode(Node* root, int key)
 void Treap::deleteNode(int key)
 {
     root = deleteNode(root, key);
+}
+
+int Treap::height(Node* root)
+{
+    if (root == NULL)
+    {
+        return -1;
+    }
+
+    return 1 + max(height(root->left), height(root->right));
+}
+int Treap::height()
+{
+    return height(root);
 }
