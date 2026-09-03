@@ -64,6 +64,11 @@ Treap::Node* Treap::insert(Node* root, int key, int priority)
     return root;
 }
 
+void Treap::insert(int key, int priority)
+{
+    root = insert(root, key, priority);
+}
+
 bool Treap::search(Node* root, int key){
 
     if (root == NULL){
@@ -136,4 +141,9 @@ Treap::Node* Treap::deleteNode(Node* root, int key)
         }
     }
     return root;
+}
+
+void Treap::deleteNode(int key)
+{
+    root = deleteNode(root, key);
 }
