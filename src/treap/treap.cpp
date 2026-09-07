@@ -8,6 +8,8 @@ using namespace std;
 Treap::Treap()
 {
     root = NULL;
+    leftRotationCount = 0;
+    rightRotationCount = 0;
 }
 
 //Destructor, for deleting all nodes
@@ -26,6 +28,8 @@ Treap::Node* Treap::rotateLeft(Node* root)
     root->right = child->left;
     child->left = root;
 
+    leftRotationCount++;
+
     return child;
 }
 
@@ -35,7 +39,15 @@ Treap::Node* Treap::rotateRight(Node* root)
     root->left = child->right;
     child->right = root;
 
+    rightRotationCount++;
+
     return child;
+}
+
+long long Treap::getRotationCount()
+{
+    long long total = leftRotationCount + rightRotationCount;
+    return total;
 }
 
 Treap::Node* Treap::insert(Node* root, int key, int priority)
