@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <iomanip>
 
+#include "benchmark.h"
 #include "bst/bst.h"
 #include "treap/treap.h"
 
@@ -294,7 +295,7 @@ void writeCSVRow(std::ofstream& csv,
 // Main benchmark runner.
 // ------------------------------------------------------------
 
-int main()
+void runBenchmark()
 {
     const std::array<std::string, 3> orderings = {
         "ascending", "descending", "random"
@@ -313,7 +314,6 @@ int main()
     if (!csv.is_open())
     {
         std::cerr << "Could not create results.csv\n";
-        return 1;
     }
 
     csv << "Ordering,Workload,N,Repetition,Structure,"
@@ -393,7 +393,6 @@ int main()
     {
         std::cerr << "\nBenchmark error: "
                   << e.what() << '\n';
-        return 1;
     }
 
     csv.close();
@@ -403,6 +402,4 @@ int main()
               << "Datasets processed: " << datasetsProcessed
               << "\nResults saved to: results.csv\n"
               << "========================================\n";
-
-    return 0;
 }
