@@ -290,3 +290,119 @@ void writeCSVRow(std::ofstream& csv,
     csv << '\n';
 }
 
+// ------------------------------------------------------------
+// Main benchmark runner.
+// ------------------------------------------------------------
+
+int main()
+{
+    const std::array<std::string, 3> orderings = {
+        "ascending", "descending", "random"
+    };
+
+    const std::array<std::string, 3> workloads = {
+        "static", "half-dynamic", "dynamic"
+    };
+
+    const std::array<int, 3> sizes = {
+        1000, 10000, 100000
+    };
+
+    std::ofstream csv("results.csv");
+
+    if (!csv.is_open())
+    {
+        std::cerr << "Could not create results.csv\n";
+        return 1;
+    }
+
+    csv << "Ordering,Workload,N,Repetition,Structure,"
+        << "InsertCount,InsertTotal_ns,InsertAverage_ns,"
+        << "SearchCount,SearchTotal_ns,SearchAverage_ns,"
+        << "DeleteCount,DeleteTotal_ns,DeleteAverage_ns,"
+        << "FinalHeight,Rotations\n";
+
+    int datasetsProcessed = 0;
+
+    try
+    {
+        for (const std::string& ordering : orderings)
+        {
+            for (const std::string& workload : workloads)
+            {
+                for (int size : sizes)
+                {
+                    fs::path path =
+                        findDataset(ordering, workload, size);
+
+                    if (path.empty())
+                    {
+                        std::cerr
+                            << "WARNING: Dataset not found: "
+                            << ordering << "/" << workload
+                            << "_" << size << '\n';
+                        continue;
+                    }
+
+                    std::cout << "\nDataset: " << path.string()
+                              << '\n';
+
+                    // Parse once, outside all timed sections.
+                    std::vector<Operation> operations =
+                        readDataset(path);
+
+                    std::cout << "Operations: "
+                              << operations.size() << '\n';
+
+                    Dataset dataset{
+                        ordering, workload, size, path
+                    };
+
+                    for (int repetition = 1;
+                         repetition <= REPETITIONS;
+                         ++repetition)
+                    {
+                        Measurements bstResults =
+                            runBST(operations);
+
+                        Measurements treapResults =
+                            runTreap(operations);
+
+                        writeCSVRow(
+                            csv, dataset, repetition,
+                            "BST", bstResults
+                        );
+
+                        writeCSVRow(
+                            csv, dataset, repetition,
+                            "Treap", treapResults
+                        );
+
+                        std::cout << "  Repetition "
+                                  << repetition << "/"
+                                  << REPETITIONS
+                                  << " completed\n";
+                    }
+
+                    ++datasetsProcessed;
+                }
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << "\nBenchmark error: "
+                  << e.what() << '\n';
+        return 1;
+    }
+
+    csv.close();
+
+    std::cout << "\n========================================\n"
+              << "Benchmark finished.\n"
+              << "Datasets processed: " << datasetsProcessed
+              << "\nResults saved to: results.csv\n"
+              << "========================================\n";
+
+    return 0;
+}
