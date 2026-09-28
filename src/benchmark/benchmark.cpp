@@ -171,3 +171,64 @@ Measurements runBST(const std::vector<Operation>& operations)
 
     return result;
 }
+
+// ------------------------------------------------------------
+// Run the same dataset on a fresh Treap.
+// ------------------------------------------------------------
+
+Measurements runTreap(const std::vector<Operation>& operations)
+{
+    Treap treap;
+    Measurements result;
+
+    for (const Operation& operation : operations)
+    {
+        auto start = Clock::now();
+
+        if (operation.type == "INSERT")
+        {
+            treap.insert(operation.key, operation.priority);
+        }
+        else if (operation.type == "SEARCH")
+        {
+            bool found = treap.search(operation.key);
+            (void)found;
+        }
+        else if (operation.type == "DELETE")
+        {
+            treap.deleteNode(operation.key);
+        }
+
+        auto end = Clock::now();
+        long long elapsed = elapsedNanoseconds(start, end);
+
+        if (operation.type == "INSERT")
+        {
+            result.insertionTotal += elapsed;
+            ++result.insertionCount;
+        }
+        else if (operation.type == "SEARCH")
+        {
+            result.searchTotal += elapsed;
+            ++result.searchCount;
+        }
+        else if (operation.type == "DELETE")
+        {
+            result.deletionTotal += elapsed;
+            ++result.deletionCount;
+        }
+    }
+
+    result.finalHeight = treap.height();
+    result.rotations = treap.getRotationCount();
+
+    return result;
+}
+
+double averageTime(long long total, long long count)
+{
+    if (count == 0)
+        return 0.0;
+
+    return static_cast<double>(total) / count;
+}
