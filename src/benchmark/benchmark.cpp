@@ -120,3 +120,54 @@ std::vector<Operation> readDataset(const fs::path& path)
 
     return operations;
 }
+// ------------------------------------------------------------
+// Run the dataset on a fresh BST.
+// ------------------------------------------------------------
+
+Measurements runBST(const std::vector<Operation>& operations)
+{
+    BST bst;
+    Measurements result;
+
+    for (const Operation& operation : operations)
+    {
+        auto start = Clock::now();
+
+        if (operation.type == "INSERT")
+        {
+            bst.insert(operation.key);
+        }
+        else if (operation.type == "SEARCH")
+        {
+            bool found = bst.search(operation.key);
+            (void)found;
+        }
+        else if (operation.type == "DELETE")
+        {
+            bst.deleteNode(operation.key);
+        }
+
+        auto end = Clock::now();
+        long long elapsed = elapsedNanoseconds(start, end);
+
+        if (operation.type == "INSERT")
+        {
+            result.insertionTotal += elapsed;
+            ++result.insertionCount;
+        }
+        else if (operation.type == "SEARCH")
+        {
+            result.searchTotal += elapsed;
+            ++result.searchCount;
+        }
+        else if (operation.type == "DELETE")
+        {
+            result.deletionTotal += elapsed;
+            ++result.deletionCount;
+        }
+    }
+
+    result.finalHeight = bst.height();
+
+    return result;
+}
