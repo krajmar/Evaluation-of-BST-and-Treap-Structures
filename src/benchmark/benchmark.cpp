@@ -10,8 +10,8 @@
 #include <iomanip>
 
 #include "benchmark.h"
-#include "bst/bst.h"
-#include "treap/treap.h"
+#include "../bst/bst.h"
+#include "../treap/treap.h"
 
 namespace fs = std::filesystem;
 using Clock = std::chrono::steady_clock;
@@ -302,11 +302,11 @@ void runBenchmark()
     };
 
     const std::array<std::string, 3> workloads = {
-        "static", "half-dynamic", "dynamic"
+        "static", "half_dynamic", "dynamic"
     };
 
-    const std::array<int, 3> sizes = {
-        1000, 10000, 100000
+    const std::array<int, 2> sizes = {
+        1000, 10000
     };
 
     std::ofstream csv("results.csv");

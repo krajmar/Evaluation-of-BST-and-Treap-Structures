@@ -2,7 +2,7 @@
   <tool name="g++ Build" showInMainMenu="false" showInEditor="false" showInProject="false" showInSearchPopup="false" disabled="false" useConsole="true" showConsoleOnStdOut="false" showConsoleOnStdErr="false" synchronizeAfterRun="true">
     <exec>
       <option name="COMMAND" value="C:\Program Files\JetBrains\CLion 2026.2.1\bin\mingw\bin\g++.exe" />
-      <option name="PARAMETERS" value="src\main.cpp src\bst\BST.cpp src\treap\treap.cpp -std=c++17 -o thesis.exe" />
+      <option name="PARAMETERS" value="src\main.cpp src\bst\BST.cpp src\treap\treap.cpp src\benchmark\benchmark.cpp -std=c++17 -o thesis.exe" />
       <option name="WORKING_DIRECTORY" value="$ProjectFileDir$" />
     </exec>
   </tool>
