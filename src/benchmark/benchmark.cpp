@@ -244,3 +244,49 @@ fs::path findDataset(const std::string& ordering,
     return fs::path("datasets") / ordering /
            (workload + "_" + std::to_string(size) + ".txt");
 }
+
+// ------------------------------------------------------------
+// Write one CSV row.
+// Times are in nanoseconds.
+// Empty fields mean "not applicable".
+// ------------------------------------------------------------
+
+void writeCSVRow(std::ofstream& csv,
+                 const Dataset& dataset,
+                 int repetition,
+                 const std::string& structure,
+                 const Measurements& m)
+{
+    csv << dataset.ordering << ','
+        << dataset.workload << ','
+        << dataset.size << ','
+        << repetition << ','
+        << structure << ','
+        << m.insertionCount << ','
+        << m.insertionTotal << ','
+        << std::fixed << std::setprecision(2)
+        << averageTime(m.insertionTotal, m.insertionCount) << ','
+        << m.searchCount << ','
+        << m.searchTotal << ','
+        << averageTime(m.searchTotal, m.searchCount) << ',';
+
+    // Deletion timing is reported only for Dynamic.
+    if (dataset.workload == "dynamic")
+    {
+        csv << m.deletionCount << ','
+            << m.deletionTotal << ','
+            << averageTime(m.deletionTotal, m.deletionCount);
+    }
+    else
+    {
+        csv << ",,";
+    }
+
+    csv << ',' << m.finalHeight << ',';
+
+    if (structure == "Treap")
+        csv << m.rotations;
+
+    csv << '\n';
+}
+
