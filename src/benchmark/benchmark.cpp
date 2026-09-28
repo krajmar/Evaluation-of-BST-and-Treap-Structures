@@ -232,3 +232,15 @@ double averageTime(long long total, long long count)
 
     return static_cast<double>(total) / count;
 }
+// ------------------------------------------------------------
+// Find a dataset
+// and filenames either with or without .txt.
+// ------------------------------------------------------------
+
+fs::path findDataset(const std::string& ordering,
+                     const std::string& workload,
+                     int size)
+{
+    return fs::path("datasets") / ordering /
+           (workload + "_" + std::to_string(size) + ".txt");
+}
