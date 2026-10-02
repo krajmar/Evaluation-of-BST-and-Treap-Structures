@@ -17,7 +17,7 @@ namespace fs = std::filesystem;
 using Clock = std::chrono::steady_clock;
 using Nanoseconds = std::chrono::nanoseconds;
 
-constexpr int REPETITIONS = 10;
+constexpr int REPETITIONS = 3;
 
 struct Operation
 {
@@ -305,8 +305,8 @@ void runBenchmark()
         "static", "half_dynamic", "dynamic"
     };
 
-    const std::array<int, 2> sizes = {
-        1000, 10000
+    const std::array<int, 3> sizes = {
+        1000, 10000, 100000
     };
 
     std::ofstream csv("results.csv");
