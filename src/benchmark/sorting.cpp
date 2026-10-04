@@ -1,9 +1,23 @@
+#include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <vector>
+#include <array>
+#include <chrono>
+#include <filesystem>
+#include <stdexcept>
+#include <iomanip>
+#include <algorithm>
+
+#include "sorting.h"
+#include "../bst/bst.h"
+#include "../treap/treap.h"
 
 using namespace std;
-using namespace chrono;
+namespace fs = std::filesystem;
+using Clock = std::chrono::steady_clock;
+using Nanoseconds = std::chrono::nanoseconds;
 
 // ============================================================
 // CLASSIC MERGE SORT
@@ -158,7 +172,7 @@ long long naturalMergeSort(vector<int>& a)
 
                 // Reverse only strictly descending runs.
                 // This preserves stability when equal keys exist.
-                reverse(a.begin() + start, a.begin() + end);
+                std::reverse(a.begin() + start, a.begin() + end);
             }
             else
             {
@@ -215,4 +229,189 @@ long long naturalMergeSort(vector<int>& a)
     }
 
     return comparisons;
+}
+// ============================================================
+// DATASET READING
+// ============================================================
+
+vector<int> readInsertKeys(const string& filename)
+{
+    ifstream file(filename);
+
+    if (!file.is_open())
+        throw runtime_error("Could not open file: " + filename);
+
+    vector<int> keys;
+    string line;
+
+    while (getline(file, line))
+    {
+        istringstream stream(line);
+
+        string operation;
+        int key;
+        int priority;
+
+        if (!(stream >> operation >> key >> priority))
+            continue;
+
+        if (operation == "INSERT")
+            keys.push_back(key);
+    }
+
+    return keys;
+}
+
+
+// ============================================================
+// BENCHMARK
+// ============================================================
+
+struct Result
+{
+    string ordering;
+    string algorithm;
+    int n;
+    int repetition;
+    long long timeNs;
+    long long comparisons;
+    bool sortedCorrectly;
+};
+
+Result benchmarkOne(const vector<int>& original,
+                    const string& ordering,
+                    const string& algorithm,
+                    int repetition)
+{
+    // Every run starts with the same unsorted input.
+    vector<int> data = original;
+
+    long long comparisons = 0;
+
+    auto start = Clock::now();
+
+    if (algorithm == "Classic Merge Sort")
+        comparisons = classicMergeSort(data);
+    else
+        comparisons = naturalMergeSort(data);
+
+    auto finish = Clock::now();
+
+    long long elapsedNs =
+    std::chrono::duration_cast<Nanoseconds>(
+        finish - start
+    ).count();
+
+    // Validation is deliberately outside the timed interval.
+    bool correct = is_sorted(data.begin(), data.end());
+
+    return {
+        ordering,
+        algorithm,
+        static_cast<int>(original.size()),
+        repetition,
+        elapsedNs,
+        comparisons,
+        correct
+    };
+}
+
+void runSortingBenchmark()
+{
+    const int DATASET_SIZE = 10000;
+    const int REPETITIONS = 3;
+
+    const vector<string> orderings = {
+        "ascending",
+        "descending",
+        "random"
+    };
+
+    const vector<string> algorithms = {
+        "Classic Merge Sort",
+        "Natural Merge Sort"
+    };
+
+    ofstream csv("sorting_results.csv");
+
+    if (!csv.is_open())
+    {
+        cerr << "Could not create sorting_results.csv\n";
+    }
+
+    csv << "Ordering,N,Algorithm,Repetition,"
+           "Time_ns,Time_s,KeyComparisons,SortedCorrectly\n";
+
+    try
+    {
+        for (const string& ordering : orderings)
+        {
+            string filename =
+                "datasets/" + ordering + "/static_10000.txt";
+
+            vector<int> original = readInsertKeys(filename);
+
+            if (original.size() != DATASET_SIZE)
+            {
+                cerr << "Unexpected number of INSERT keys in "
+                     << filename << ": " << original.size()
+                     << " (expected " << DATASET_SIZE << ")\n";
+            }
+
+            cout << "\nDataset: " << ordering
+                 << " (" << original.size() << " keys)\n";
+
+            for (const string& algorithm : algorithms)
+            {
+                for (int repetition = 1;
+                     repetition <= REPETITIONS;
+                     repetition++)
+                {
+                    Result result = benchmarkOne(
+                        original,
+                        ordering,
+                        algorithm,
+                        repetition);
+
+                    double timeSeconds =
+                        result.timeNs / 1'000'000'000.0;
+
+                    csv << result.ordering << ','
+                        << result.n << ','
+                        << result.algorithm << ','
+                        << result.repetition << ','
+                        << result.timeNs << ','
+                        << timeSeconds << ','
+                        << result.comparisons << ','
+                        << (result.sortedCorrectly ? "true" : "false")
+                        << '\n';
+
+                    // Preserve results if the program stops early.
+                    csv.flush();
+
+                    cout << algorithm
+                         << " | repetition " << repetition
+                         << " | " << result.timeNs << " ns"
+                         << " | comparisons: " << result.comparisons
+                         << " | sorted: "
+                         << (result.sortedCorrectly ? "yes" : "NO")
+                         << '\n';
+
+                    if (!result.sortedCorrectly)
+                    {
+                        cerr << "ERROR: Sorting failed!\n";
+                    }
+                }
+            }
+        }
+    }
+    catch (const exception& e)
+    {
+        cerr << "Error: " << e.what() << '\n';
+    }
+
+    csv.close();
+
+    cout << "\nBenchmark completed successfully.\n";
+    cout << "Results saved to sorting_results.csv\n";
 }

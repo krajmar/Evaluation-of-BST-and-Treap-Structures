@@ -1,0 +1,19 @@
+Ordering,N,Algorithm,Repetition,Time_ns,Time_s,KeyComparisons,SortedCorrectly
+ascending,10000,Classic Merge Sort,1,270500,0.0002705,69008,true
+ascending,10000,Classic Merge Sort,2,358000,0.000358,69008,true
+ascending,10000,Classic Merge Sort,3,611300,0.0006113,69008,true
+ascending,10000,Natural Merge Sort,1,22000,2.2e-05,9999,true
+ascending,10000,Natural Merge Sort,2,25900,2.59e-05,9999,true
+ascending,10000,Natural Merge Sort,3,18400,1.84e-05,9999,true
+descending,10000,Classic Merge Sort,1,284600,0.0002846,64608,true
+descending,10000,Classic Merge Sort,2,220700,0.0002207,64608,true
+descending,10000,Classic Merge Sort,3,345200,0.0003452,64608,true
+descending,10000,Natural Merge Sort,1,25000,2.5e-05,9999,true
+descending,10000,Natural Merge Sort,2,26600,2.66e-05,9999,true
+descending,10000,Natural Merge Sort,3,35800,3.58e-05,9999,true
+random,10000,Classic Merge Sort,1,687100,0.0006871,120419,true
+random,10000,Classic Merge Sort,2,971200,0.0009712,120419,true
+random,10000,Classic Merge Sort,3,941400,0.0009414,120419,true
+random,10000,Natural Merge Sort,1,805200,0.0008052,132958,true
+random,10000,Natural Merge Sort,2,823000,0.000823,132958,true
+random,10000,Natural Merge Sort,3,709600,0.0007096,132958,true
