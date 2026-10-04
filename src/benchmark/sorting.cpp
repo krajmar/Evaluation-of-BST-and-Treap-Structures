@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <cmath>
 #include <chrono>
 #include <filesystem>
 #include <stdexcept>
@@ -230,6 +231,75 @@ long long naturalMergeSort(vector<int>& a)
 
     return comparisons;
 }
+
+long long countInversionsMerge(
+    vector<int>& a,
+    vector<int>& temp,
+    int left,
+    int right)
+{
+    if (left >= right)
+        return 0;
+
+    int mid = left + (right - left) / 2;
+
+    long long inversions = 0;
+
+    inversions += countInversionsMerge(
+        a, temp, left, mid);
+
+    inversions += countInversionsMerge(
+        a, temp, mid + 1, right);
+
+    int i = left;
+    int j = mid + 1;
+    int k = left;
+
+    while (i <= mid && j <= right)
+    {
+        if (a[i] <= a[j])
+        {
+            temp[k++] = a[i++];
+        }
+        else
+        {
+            // Every remaining element in the left half
+            // forms an inversion with a[j].
+            inversions += (mid - i + 1);
+
+            temp[k++] = a[j++];
+        }
+    }
+
+    while (i <= mid)
+        temp[k++] = a[i++];
+
+    while (j <= right)
+        temp[k++] = a[j++];
+
+    for (int p = left; p <= right; p++)
+        a[p] = temp[p];
+
+    return inversions;
+}
+
+
+long long countInversions(const vector<int>& original)
+{
+    if (original.size() < 2)
+        return 0;
+
+    vector<int> a = original;
+    vector<int> temp(a.size());
+
+    return countInversionsMerge(
+        a,
+        temp,
+        0,
+        static_cast<int>(a.size()) - 1
+    );
+}
+
 // ============================================================
 // DATASET READING
 // ============================================================
@@ -339,7 +409,7 @@ void runSortingBenchmark()
         cerr << "Could not create sorting_results.csv\n";
     }
 
-    csv << "Ordering,N,Algorithm,Repetition,"
+    csv << "Ordering,N,Inversions,Algorithm,Repetition,"
            "Time_ns,Time_s,KeyComparisons,SortedCorrectly\n";
 
     try
@@ -358,8 +428,13 @@ void runSortingBenchmark()
                      << " (expected " << DATASET_SIZE << ")\n";
             }
 
+            long long inversions = countInversions(original);
+
             cout << "\nDataset: " << ordering
                  << " (" << original.size() << " keys)\n";
+
+            cout << "Inversions: "
+                 << inversions << '\n';
 
             for (const string& algorithm : algorithms)
             {
@@ -378,6 +453,7 @@ void runSortingBenchmark()
 
                     csv << result.ordering << ','
                         << result.n << ','
+                        << inversions << ','
                         << result.algorithm << ','
                         << result.repetition << ','
                         << result.timeNs << ','
