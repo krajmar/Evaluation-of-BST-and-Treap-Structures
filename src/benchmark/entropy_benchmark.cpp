@@ -233,8 +233,8 @@ void runEntropyBenchmark()
         "static"
     };
 
-    const std::array<int, 1> sizes = {
-        10000
+    const std::array<int, 2> sizes = {
+        10000, 100000
     };
 
     std::ofstream csv("entropy_results.csv");
