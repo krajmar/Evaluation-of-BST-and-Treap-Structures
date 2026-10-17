@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
     cout << "Starting BST vs Treap entropy benchmark...\n";
-    runEntropyBenchmark();
+    runBenchmark();
 
     return 0;
 }
