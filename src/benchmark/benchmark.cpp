@@ -242,6 +242,13 @@ fs::path findDataset(const std::string& ordering,
                      const std::string& workload,
                      int size)
 {
+    if (ordering == "mixed")
+    {
+        return fs::path("datasets") / "mixed" /
+               (workload + "_mixed_" +
+                std::to_string(size) + ".txt");
+    }
+
     return fs::path("datasets") / ordering /
            (workload + "_" + std::to_string(size) + ".txt");
 }
@@ -297,8 +304,8 @@ void writeCSVRow(std::ofstream& csv,
 
 void runBenchmark()
 {
-    const std::array<std::string, 3> orderings = {
-        "ascending", "descending", "random"
+    const std::array<std::string, 4> orderings = {
+        "ascending", "descending", "random", "mixed"
     };
 
     const std::array<std::string, 3> workloads = {
@@ -330,6 +337,9 @@ void runBenchmark()
         {
             for (const std::string& workload : workloads)
             {
+                if (ordering == "mixed" && workload != "static")
+                    continue;
+
                 for (int size : sizes)
                 {
                     fs::path path =
