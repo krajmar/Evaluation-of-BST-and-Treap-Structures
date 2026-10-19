@@ -55,6 +55,140 @@ long long elapsedNanoseconds(Clock::time_point start,
     ).count();
 }
 
+//HEIGHT EXPERIMENT
+
+struct HeightRecord {
+    std::string structure;
+    std::string ordering;
+    int insertionsCompleted;
+    int treeHeight;
+};
+
+static void processHeightDataset(
+    const std::string& datasetPath,
+    const std::string& ordering,
+    std::vector<HeightRecord>& records
+) {
+    // Process the BST.
+    {
+        BST bst;
+        std::ifstream file(datasetPath);
+
+        if (!file) {
+            throw std::runtime_error(
+                "Could not open dataset: " + datasetPath
+            );
+        }
+
+        std::string operation;
+        int key, priority;
+        int insertionsCompleted = 0;
+
+        while (file >> operation >> key >> priority) {
+            if (operation == "INSERT") {
+                bst.insert(key);
+                ++insertionsCompleted;
+
+                records.push_back({
+                    "BST",
+                    ordering,
+                    insertionsCompleted,
+                    bst.height()
+                });
+            }
+            else if (operation == "SEARCH") {
+                bst.search(key);
+            }
+            else if (operation == "DELETE") {
+                bst.deleteNode(key);
+            }
+        }
+    }
+
+    // Process the Treap using the same dataset.
+    {
+        Treap treap;
+        std::ifstream file(datasetPath);
+
+        if (!file) {
+            throw std::runtime_error(
+                "Could not open dataset: " + datasetPath
+            );
+        }
+
+        std::string operation;
+        int key, priority;
+        int insertionsCompleted = 0;
+
+        while (file >> operation >> key >> priority) {
+            if (operation == "INSERT") {
+                treap.insert(key, priority);
+                ++insertionsCompleted;
+
+                records.push_back({
+                    "Treap",
+                    ordering,
+                    insertionsCompleted,
+                    treap.height()
+                });
+            }
+            else if (operation == "SEARCH") {
+                treap.search(key);
+            }
+            else if (operation == "DELETE") {
+                treap.deleteNode(key);
+            }
+        }
+    }
+}
+
+void runHeightExperiment() {
+    const std::vector<std::string> orderings = {
+        "ascending",
+        "descending",
+        "random"
+    };
+
+    const int n = 100000;
+
+    std::vector<HeightRecord> records;
+    records.reserve(6 * n);
+
+    for (const auto& ordering : orderings) {
+        const std::string datasetPath =
+            "datasets/" + ordering +
+            "/dynamic_" + std::to_string(n) + ".txt";
+
+        processHeightDataset(
+            datasetPath,
+            ordering,
+            records
+        );
+    }
+
+    std::ofstream csv("height_results.csv");
+
+    if (!csv) {
+        throw std::runtime_error(
+            "Could not create height_results.csv"
+        );
+    }
+
+    csv << "Structure,Ordering,InsertionsCompleted,TreeHeight\n";
+
+    for (const auto& record : records) {
+        csv << record.structure << ','
+            << record.ordering << ','
+            << record.insertionsCompleted << ','
+            << record.treeHeight << '\n';
+    }
+
+    std::cout
+        << "Height measurements saved to height_results.csv\n";
+}
+
+//------------------------------------
+
 // ------------------------------------------------------------
 // Read the dataset file.
 // Every line must contain: OPERATION KEY PRIORITY

@@ -1,1 +1,2 @@
 void runBenchmark();
+void runHeightExperiment();
