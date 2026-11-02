@@ -276,7 +276,6 @@ void runEntropyBenchmark()
 
                 fs::path path =
                     fs::path("datasets") /
-                    ("n_" + std::to_string(size)) /
                     entropy /
                     ("static_" + std::to_string(size) + ".txt");
 
