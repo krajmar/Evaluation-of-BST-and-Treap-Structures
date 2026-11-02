@@ -224,9 +224,18 @@ void writeCSVRowEntropy(
 // ------------------------------------------------------------
 void runEntropyBenchmark()
 {
-    const std::array<std::string, 10> entropies = {
-        "k_1", "k_2", "k_4", "k_5", "k_8",
-        "k_10", "k_16", "k_20", "k_25", "k_40"
+    const std::vector<int> runCounts10000 = {
+        1, 2, 4, 5, 8, 10, 16, 20, 25, 40,
+        50, 80, 100, 125, 200, 250, 400, 500,
+        625, 1000, 1250, 2000, 2500, 5000, 10000
+    };
+
+    const std::vector<int> runCounts100000 = {
+        1, 2, 4, 5, 8, 10, 16, 20, 25, 32, 40,
+        50, 80, 100, 125, 160, 200, 250, 400,
+        500, 625, 800, 1000, 1250, 2000, 2500,
+        3125, 4000, 5000, 6250, 10000, 12500,
+        20000, 25000, 50000, 100000
     };
 
     const std::array<std::string, 1> workloads = {
@@ -253,64 +262,72 @@ void runEntropyBenchmark()
 
     try
     {
-        for (const std::string& entropy : entropies)
+        for (int size : sizes)
         {
-            for (const std::string& workload : workloads)
+            const std::vector<int>& runCounts =
+                (size == 10000) ? runCounts10000 : runCounts100000;
+
+            for (int k : runCounts)
             {
-                for (int size : sizes)
+                const std::string entropy =
+                    "k_" + std::to_string(k);
+
+                const std::string workload = "static";
+
+                fs::path path =
+                    fs::path("datasets") /
+                    ("n_" + std::to_string(size)) /
+                    entropy /
+                    ("static_" + std::to_string(size) + ".txt");
+
+                if (!fs::exists(path))
                 {
-                    fs::path path =
-                        findDatasetEntropy(entropy, workload, size);
-
-                    if (!fs::exists(path))
-                    {
-                        std::cerr
-                            << "WARNING: Dataset not found: "
-                            << path.string() << '\n';
-                        continue;
-                    }
-
-                    std::cout << "\nDataset: "
-                              << path.string() << '\n';
-
-                    std::vector<OperationEntropy> operations =
-                        readDatasetEntropy(path);
-
-                    std::cout << "Insert Operations Loaded: "
-                              << operations.size() << '\n';
-
-                    DatasetEntropy dataset{
-                        entropy, workload, size, path
-                    };
-
-                    for (int repetition = 1;
-                         repetition <= REPETITIONS;
-                         ++repetition)
-                    {
-                        MeasurementsEntropy bstResults =
-                            runBSTEntropy(operations);
-
-                        MeasurementsEntropy treapResults =
-                            runTreapEntropy(operations);
-
-                        writeCSVRowEntropy(
-                            csv, dataset, repetition,
-                            "BST", bstResults);
-
-                        writeCSVRowEntropy(
-                            csv, dataset, repetition,
-                            "Treap", treapResults);
-
-                        csv.flush();
-
-                        std::cout
-                            << "  Repetition " << repetition
-                            << "/" << REPETITIONS
-                            << " completed\n";
-                    }
-
-                    ++datasetsProcessed;
+                    std::cerr
+                        << "WARNING: Dataset not found: "
+                        << path.string() << '\n';
+                    continue;
                 }
+
+                std::cout << "\nDataset: "
+                          << path.string() << '\n';
+
+                std::vector<OperationEntropy> operations =
+                    readDatasetEntropy(path);
+
+                std::cout << "Insert Operations Loaded: "
+                          << operations.size() << '\n';
+
+                DatasetEntropy dataset{
+                    entropy, workload, size, path
+                };
+
+                for (int repetition = 1;
+                     repetition <= REPETITIONS;
+                     ++repetition)
+                {
+                    MeasurementsEntropy bstResults =
+                        runBSTEntropy(operations);
+
+                    MeasurementsEntropy treapResults =
+                        runTreapEntropy(operations);
+
+                    writeCSVRowEntropy(
+                        csv, dataset, repetition,
+                        "BST", bstResults);
+
+                    writeCSVRowEntropy(
+                        csv, dataset, repetition,
+                        "Treap", treapResults);
+
+                    csv.flush();
+
+                    std::cout
+                        << "  Repetition " << repetition
+                        << "/" << REPETITIONS
+                        << " completed\n";
+                }
+
+                ++datasetsProcessed;
             }
         }
     }
